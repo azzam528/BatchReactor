@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="fw-bold">Prediction History</h1>
+
+        <p class="text-muted mb-0">
+            Riwayat hasil prediction yang dilakukan selama aplikasi berjalan.
+        </p>
+    </div>
+
+
+    <!-- History Card -->
+    <div class="card dashboard-card shadow-sm">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        Prediction Records
+                    </h5>
+
+                    <small class="text-muted">
+                        Data prediction terbaru
+                    </small>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    id="refreshHistoryButton"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <!-- Loading -->
+            <div
+                id="historyLoading"
+                class="text-center py-5"
+            >
+
+                <div
+                    class="spinner-border text-primary"
+                    role="status"
+                >
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading history...
+                </p>
+
+            </div>
+
+
+            <!-- Empty State -->
+            <div
+                id="historyEmpty"
+                class="text-center py-5 d-none"
+            >
+
+                <h5 class="text-muted">
+                    Belum ada prediction
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Prediction yang dilakukan selama aplikasi berjalan
+                    akan muncul di sini.
+                </p>
+
+            </div>
+
+
+            <!-- Error -->
+            <div
+                id="historyError"
+                class="alert alert-danger d-none"
+            >
+
+                <strong>Failed to load history</strong>
+
+                <div id="historyErrorText"></div>
+
+            </div>
+
+
+            <!-- History Table -->
+            <div
+                id="historyTableContainer"
+                class="table-responsive d-none"
+            >
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th scope="col">
+                                Time
+                            </th>
+
+                            <th scope="col">
+                                Temperature
+                            </th>
+
+                            <th scope="col">
+                                Coolant Flow
+                            </th>
+
+                            <th scope="col">
+                                Pressure
+                            </th>
+
+                            <th scope="col">
+                                Reactant A
+                            </th>
+
+                            <th scope="col">
+                                Product B
+                            </th>
+
+                            <th scope="col">
+                                Prediction
+                            </th>
+
+                            <th scope="col">
+                                Probability
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="historyTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+
+{% endblock %}
