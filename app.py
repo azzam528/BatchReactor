@@ -52,9 +52,16 @@ def discretize_state(state):
 def home():
     return render_template("index.html")
 
-@app.route("/supervised")
-def supervised():
-    return render_template("supervised.html")
+
+@app.route("/simulation")
+def simulation():
+    return render_template("simulation.html")
+
+
+@app.route("/history")
+def history():
+    return render_template("history.html")
+
 
 @app.route("/reinforcement")
 def reinforcement():
@@ -96,6 +103,10 @@ def predict_defect():
         "timestamp": datetime.now().isoformat(timespec="seconds"),
     })
 
+
+# ========================================
+# WHAT-IF SIMULATION
+# ========================================
 
 @app.route("/api/reactor-control", methods=["POST"])
 def reactor_control():
