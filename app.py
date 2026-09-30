@@ -5,13 +5,18 @@ import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request, jsonify
 
+from database import SessionLocal
+from models_db import PredictionHistory, SimulationHistory
+
 app = Flask(__name__)
 
 # --- Load model SEKALI saat server start ---
 MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
 
+
 def load(name):
     return joblib.load(os.path.join(MODEL_DIR, name))
+
 
 sup_model = load("supervised_model.pkl")
 sup_scaler = load("supervised_scaler.pkl")
@@ -20,7 +25,10 @@ rl_qtable = load("rl_qtable.pkl")
 rl_meta = load("rl_metadata.pkl")
 
 
-# --- Helper ---
+# ========================================
+# HELPER
+# ========================================
+
 def parse_input(data):
     if not data:
         raise ValueError("Data JSON kosong")
@@ -47,7 +55,62 @@ def discretize_state(state):
     return int(np.ravel_multi_index(idx, rl_meta["n_bins"]))
 
 
-# --- Halaman ---
+def run_prediction(values):
+    """Return (status, probabilitas kelas yang diprediksi, dict probabilitas)."""
+    X = pd.DataFrame([[values[f] for f in FEATURES]], columns=FEATURES)
+    X_scaled = sup_scaler.transform(X)
+    pred = int(sup_model.predict(X_scaled)[0])
+    proba = sup_model.predict_proba(X_scaled)[0]
+    p = {int(c): float(pr) for c, pr in zip(sup_model.classes_, proba)}
+    status = "DEFECT" if pred == 1 else "NORMAL"
+    return status, p.get(pred, 0.0), p
+
+
+def run_recommendation(values):
+    """Return (aksi, penjelasan, action_id, q_values)."""
+    # Urutan state sesuai notebook: suhu, tekanan, reaktan, produk, coolant
+    state = [values["Reactor_Temp_C"], values["Pressure_atm"],
+             values["Reactant_A_Conc_mol_L"], values["Product_B_Conc_mol_L"],
+             values["Jacket_Flow_Rate_L_min"]]
+    q = rl_qtable[discretize_state(state)]
+    q_values = {"turunkan": float(q[0]), "pertahankan": float(q[1]), "naikkan": float(q[2])}
+    if not q.any():
+        # Semua Q-value 0 = state ini belum pernah dipelajari agen
+        return ("Tidak ada rekomendasi",
+                "Kondisi ini belum pernah dipelajari agen RL (simulasi).",
+                None, q_values)
+    action_id = int(np.argmax(q))
+    return (rl_meta["actions"][action_id],
+            "Rekomendasi hasil simulasi Q-Learning, bukan instruksi kontrol otomatis.",
+            action_id, q_values)
+
+
+def db_fields(v, status, prob):
+    return dict(
+        reactor_temperature=v["Reactor_Temp_C"],
+        jacket_flow_rate=v["Jacket_Flow_Rate_L_min"],
+        pressure=v["Pressure_atm"],
+        reactant_a_concentration=v["Reactant_A_Conc_mol_L"],
+        product_b_concentration=v["Product_B_Conc_mol_L"],
+        predicted_class=status,
+        probability=prob,
+    )
+
+
+def save_record(model_cls, **fields):
+    """Simpan ke database. Kalau DB error, prediksi tetap jalan."""
+    try:
+        with SessionLocal() as session:
+            session.add(model_cls(**fields))
+            session.commit()
+    except Exception as e:
+        app.logger.error(f"Gagal simpan ke database: {e}")
+
+
+# ========================================
+# HALAMAN
+# ========================================
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -58,21 +121,111 @@ def simulation():
     return render_template("simulation.html")
 
 
-@app.route("/history")
-def history():
-    return render_template("history.html")
-
-
 @app.route("/reinforcement")
 def reinforcement():
     return render_template("reinforcement.html")
 
 
-# --- API ---
+@app.route("/model-info")
+def model_info():
+    return render_template("model_info.html")
+
+
+@app.route("/history")
+def history():
+    # Alamat yang sama dipakai halaman (dibuka browser) dan data JSON (dipanggil fetch).
+    # Browser mengirim Accept: text/html, fetch() tidak.
+    if "text/html" in request.headers.get("Accept", ""):
+        return render_template("history.html")
+    return history_data()
+
+
+# ========================================
+# API - FRONTEND (Dashboard, Simulation, History, Status)
+# ========================================
+
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
 
+
+@app.route("/model/status")
+def model_status():
+    return jsonify({
+        "supervised_model": sup_model is not None,
+        "scaler": sup_scaler is not None,
+        "features": FEATURES is not None,
+        "rl_qtable": rl_qtable is not None,
+        "rl_metadata": rl_meta is not None,
+    })
+
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    try:
+        v = parse_input(request.get_json(silent=True))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    status, prob, _ = run_prediction(v)
+    save_record(PredictionHistory, **db_fields(v, status, prob))
+    return jsonify({
+        "status": status,
+        "predicted_class": status,
+        "probability": prob,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+    })
+
+
+@app.route("/simulate", methods=["POST"])
+def simulate():
+    try:
+        v = parse_input(request.get_json(silent=True))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    status, prob, _ = run_prediction(v)
+    action, desc, _, _ = run_recommendation(v)
+    save_record(SimulationHistory, **db_fields(v, status, prob), recommended_action=action)
+    return jsonify({
+        "status": status,
+        "predicted_class": status,
+        "probability": prob,
+        "recommended_action": action,
+        "recommendation_description": desc,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+    })
+
+
+def history_data():
+    rows = []
+    try:
+        with SessionLocal() as session:
+            for cls, source in ((PredictionHistory, "predict"), (SimulationHistory, "simulate")):
+                for r in session.query(cls).order_by(cls.id.desc()).limit(50):
+                    rows.append({
+                        "timestamp": r.created_at.isoformat(timespec="seconds"),
+                        "Reactor_Temp_C": r.reactor_temperature,
+                        "Jacket_Flow_Rate_L_min": r.jacket_flow_rate,
+                        "Pressure_atm": r.pressure,
+                        "Reactant_A_Conc_mol_L": r.reactant_a_concentration,
+                        "Product_B_Conc_mol_L": r.product_b_concentration,
+                        "status": r.predicted_class,
+                        "probability": r.probability,
+                        "recommended_action": getattr(r, "recommended_action", None),
+                        "source": source,
+                    })
+    except Exception as e:
+        app.logger.error(f"Gagal baca history: {e}")
+        return jsonify({"error": "Database tidak tersedia"}), 500
+
+    rows.sort(key=lambda x: x["timestamp"], reverse=True)
+    return jsonify(rows[:50])
+
+
+# ========================================
+# API - VERSI LAMA (tetap dipertahankan)
+# ========================================
 
 @app.route("/api/predict-defect", methods=["POST"])
 def predict_defect():
@@ -81,21 +234,11 @@ def predict_defect():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    X = pd.DataFrame([[values[f] for f in FEATURES]], columns=FEATURES)
-    X_scaled = sup_scaler.transform(X)
-    pred = int(sup_model.predict(X_scaled)[0])
-    proba = sup_model.predict_proba(X_scaled)[0]
-    p = {int(c): float(pr) for c, pr in zip(sup_model.classes_, proba)}
-
-    if pred == 1:
-        status = "DEFECT"
-        msg = "Terdeteksi kondisi defect. Periksa suhu dan aliran coolant."
-    else:
-        status = "NORMAL"
-        msg = "Kondisi reaktor normal."
-
+    status, _, p = run_prediction(values)
+    msg = ("Terdeteksi kondisi defect. Periksa suhu dan aliran coolant."
+           if status == "DEFECT" else "Kondisi reaktor normal.")
     return jsonify({
-        "predicted_class": pred,
+        "predicted_class": 1 if status == "DEFECT" else 0,
         "status": status,
         "prediction": status,
         "probability": {"normal": p.get(0, 0.0), "anomali": p.get(1, 0.0)},
@@ -104,10 +247,6 @@ def predict_defect():
     })
 
 
-# ========================================
-# WHAT-IF SIMULATION
-# ========================================
-
 @app.route("/api/reactor-control", methods=["POST"])
 def reactor_control():
     try:
@@ -115,29 +254,13 @@ def reactor_control():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    # Urutan state sesuai notebook: suhu, tekanan, reaktan, produk, coolant
-    state = [v["Reactor_Temp_C"], v["Pressure_atm"], v["Reactant_A_Conc_mol_L"],
-             v["Product_B_Conc_mol_L"], v["Jacket_Flow_Rate_L_min"]]
-    q = rl_qtable[discretize_state(state)]
-    q_values = {"turunkan": float(q[0]), "pertahankan": float(q[1]), "naikkan": float(q[2])}
-
-    if not q.any():
-        # Semua Q-value 0 = state ini belum pernah dipelajari agen
-        return jsonify({
-            "action": "Tidak ada rekomendasi",
-            "action_id": None,
-            "q_values": q_values,
-            "known_state": False,
-            "safety_message": "Kondisi ini belum pernah dipelajari agen RL (simulasi).",
-        })
-
-    action_id = int(np.argmax(q))
+    action, desc, action_id, q_values = run_recommendation(v)
     return jsonify({
-        "action": rl_meta["actions"][action_id],
+        "action": action,
         "action_id": action_id,
         "q_values": q_values,
-        "known_state": True,
-        "safety_message": "Rekomendasi hasil simulasi Q-Learning, bukan instruksi kontrol otomatis.",
+        "known_state": action_id is not None,
+        "safety_message": desc,
     })
 
 
