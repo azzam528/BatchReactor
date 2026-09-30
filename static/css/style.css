@@ -156,6 +156,7 @@ main {
     border: none;
     border-radius: 14px;
     background-color: #ffffff;
+    padding: 16px;
 }
 
 .dashboard-card h5 {
