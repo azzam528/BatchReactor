@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Model Info{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="fw-bold">Model Information</h1>
+
+        <p class="text-muted mb-0">
+            Informasi model machine learning yang digunakan
+            pada Reactor Monitoring Dashboard.
+        </p>
+    </div>
+
+
+    <!-- Model Overview -->
+    <div class="row g-4">
+
+        <!-- Supervised Learning -->
+        <div class="col-lg-6">
+
+            <div class="card dashboard-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+
+                        <span class="badge bg-primary">
+                            Supervised Learning
+                        </span>
+
+                    </div>
+
+                    <h4 class="fw-bold">
+                        Random Forest Classifier
+                    </h4>
+
+                    <p class="text-muted">
+                        Digunakan untuk melakukan klasifikasi kondisi
+                        reactor berdasarkan lima parameter input.
+                    </p>
+
+
+                    <hr>
+
+
+                    <h6 class="fw-bold">
+                        Input Features
+                    </h6>
+
+                    <ul class="text-muted">
+
+                        <li>
+                            Reactor Temperature
+                        </li>
+
+                        <li>
+                            Jacket Flow Rate
+                        </li>
+
+                        <li>
+                            Pressure
+                        </li>
+
+                        <li>
+                            Reactant A Concentration
+                        </li>
+
+                        <li>
+                            Product B Concentration
+                        </li>
+
+                    </ul>
+
+
+                    <h6 class="fw-bold mt-4">
+                        Target
+                    </h6>
+
+                    <p class="text-muted mb-0">
+                        Target Defect
+                    </p>
+
+
+                    <h6 class="fw-bold mt-4">
+                        Model Configuration
+                    </h6>
+
+                    <ul class="text-muted mb-0">
+
+                        <li>
+                            Algorithm: Random Forest
+                        </li>
+
+                        <li>
+                            Number of Trees: 100
+                        </li>
+
+                        <li>
+                            Random State: 42
+                        </li>
+
+                        <li>
+                            Preprocessing: StandardScaler
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Reinforcement Learning -->
+        <div class="col-lg-6">
+
+            <div class="card dashboard-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+
+                        <span class="badge bg-success">
+                            Reinforcement Learning
+                        </span>
+
+                    </div>
+
+                    <h4 class="fw-bold">
+                        Q-Learning
+                    </h4>
+
+                    <p class="text-muted">
+                        Digunakan untuk memberikan rekomendasi tindakan
+                        berdasarkan kondisi reactor yang disimulasikan.
+                    </p>
+
+
+                    <hr>
+
+
+                    <h6 class="fw-bold">
+                        State
+                    </h6>
+
+                    <p class="text-muted">
+                        State terdiri dari lima parameter:
+                    </p>
+
+                    <ul class="text-muted">
+
+                        <li>
+                            Suhu
+                        </li>
+
+                        <li>
+                            Tekanan
+                        </li>
+
+                        <li>
+                            Reaktan
+                        </li>
+
+                        <li>
+                            Produk
+                        </li>
+
+                        <li>
+                            Coolant
+                        </li>
+
+                    </ul>
+
+
+                    <h6 class="fw-bold mt-4">
+                        Available Actions
+                    </h6>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-sm">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Action ID</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>0</td>
+                                    <td>Turunkan Coolant</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>Pertahankan</td>
+                                </tr>
+
+                                <tr>
+                                    <td>2</td>
+                                    <td>Naikkan Coolant</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <div class="alert alert-warning mt-4 mb-0">
+
+                        <small>
+                            <strong>Catatan:</strong>
+                            Rekomendasi yang ditampilkan merupakan
+                            rekomendasi dari model untuk kebutuhan
+                            monitoring dan simulasi, bukan instruksi
+                            kontrol otomatis terhadap reactor fisik.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Model Artifacts -->
+    <div class="card dashboard-card shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">
+                Model Artifacts
+            </h5>
+
+            <p class="text-muted">
+                Artifact model yang digunakan oleh backend:
+            </p>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+                            Supervised Model
+                        </small>
+
+                        <div class="fw-bold">
+                            supervised_model.pkl
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+                            Scaler
+                        </small>
+
+                        <div class="fw-bold">
+                            supervised_scaler.pkl
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+                            Features
+                        </small>
+
+                        <div class="fw-bold">
+                            supervised_features.pkl
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+                            Q-Learning Table
+                        </small>
+
+                        <div class="fw-bold">
+                            rl_qtable.pkl
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+                            RL Metadata
+                        </small>
+
+                        <div class="fw-bold">
+                            rl_metadata.pkl
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- System Purpose -->
+    <div class="card dashboard-card shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">
+                System Purpose
+            </h5>
+
+            <p class="text-muted mb-0">
+                Sistem ini digunakan sebagai
+                <strong>Reactor Monitoring & Anomaly Simulation Dashboard</strong>.
+                Sistem berfungsi untuk monitoring, prediction,
+                simulasi, dan rekomendasi berbasis model machine learning.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
