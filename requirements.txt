@@ -3,3 +3,8 @@ joblib
 numpy
 pandas
 scikit-learn==1.6.1
+Flask-SQLAlchemy
+SQLAlchemy
+alembic
+psycopg2-binary
+python-dotenv
