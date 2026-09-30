@@ -23,6 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
         "predictionTimestamp"
     );
 
+    const recommendationAction = document.getElementById(
+        "recommendationAction"
+    );
+    const recommendationDescription = document.getElementById(
+        "recommendationDescription"
+    );
+
     const temperatureValue = document.getElementById(
         "temperatureValue"
     );
@@ -255,6 +262,18 @@ document.addEventListener("DOMContentLoaded", function () {
     ======================================== */
 
     function updatePredictionResult(result) {
+
+
+        if (recommendationAction) {
+            recommendationAction.textContent =
+                result.recommended_action || "No recommendation";
+        }
+
+        if (recommendationDescription) {
+            recommendationDescription.textContent =
+                result.recommendation_description ||
+                "Run a prediction to receive a recommendation.";
+        }
 
         const status = (
             result.status ||

@@ -168,11 +168,14 @@ def predict():
         return jsonify({"error": str(e)}), 400
 
     status, prob, _ = run_prediction(v)
+    action, desc, _, _ = run_recommendation(v)
     save_record(PredictionHistory, **db_fields(v, status, prob))
     return jsonify({
         "status": status,
         "predicted_class": status,
         "probability": prob,
+        "recommended_action": action,
+        "recommendation_description": desc,
         "timestamp": datetime.now().isoformat(timespec="seconds"),
     })
 
