@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function getInputData() {
 
-        return {
+        const data = {
 
             Reactor_Temp_C: parseFloat(
                 document.getElementById("reactorTemp").value
@@ -221,6 +221,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("productB").value
             )
         };
+
+        /* Suhu aktual bersifat opsional */
+        const actualInput = document.getElementById("actualNextTemp");
+
+        if (actualInput && actualInput.value.trim() !== "") {
+            data.Actual_Next_Temp_C = parseFloat(actualInput.value);
+        }
+
+        return data;
     }
 
 
