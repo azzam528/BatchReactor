@@ -1,34 +1,45 @@
 {% extends "base.html" %}
 
 {% block title %}
-Dashboard - Reactor Monitoring
+Dashboard - Batch Reactor Intelligence
 {% endblock %}
+
 
 {% block content %}
 
-<!-- ========================================
-     DASHBOARD HEADER
-======================================== -->
+<!-- ================================
+     HEADER
+================================ -->
 
-<section class="dashboard-header py-4">
+<section class="dashboard-header">
+
     <div class="container">
 
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="header-content">
 
             <div>
-                <h1 class="fw-bold mb-1">
-                    Reactor Monitoring
+
+                <div class="eyebrow">
+                    BATCH REACTOR MONITORING
+                </div>
+
+                <h1>
+                    Reactor Intelligence Dashboard
                 </h1>
 
-                <p class="text-muted mb-0">
-                    Monitoring kondisi dan simulasi reaktor
+                <p>
+                    Predict the next reactor temperature,
+                    monitor prediction deviation,
+                    and explore simulated control actions.
                 </p>
+
             </div>
 
-            <!-- System Status -->
-            <div class="system-status d-flex gap-3">
+
+            <div class="system-status">
 
                 <div class="status-item">
+
                     <span
                         id="backendStatusIndicator"
                         class="status-dot status-unknown">
@@ -37,12 +48,15 @@ Dashboard - Reactor Monitoring
                     <span>
                         Backend:
                         <strong id="backendStatus">
-                            Checking...
+                            Offline
                         </strong>
                     </span>
+
                 </div>
 
+
                 <div class="status-item">
+
                     <span
                         id="modelStatusIndicator"
                         class="status-dot status-unknown">
@@ -51,9 +65,10 @@ Dashboard - Reactor Monitoring
                     <span>
                         Model:
                         <strong id="modelStatus">
-                            Checking...
+                            Not loaded
                         </strong>
                     </span>
+
                 </div>
 
             </div>
@@ -61,290 +76,281 @@ Dashboard - Reactor Monitoring
         </div>
 
     </div>
+
 </section>
 
 
-<!-- ========================================
-     REACTOR STATUS
-======================================== -->
+<!-- ================================
+     MAIN
+================================ -->
 
-<section class="container mb-4">
+<div class="container dashboard-container">
 
-    <div class="card reactor-status-card shadow-sm">
 
-        <div class="card-body text-center py-5">
+    <!-- ============================
+         PREDICTION HERO
+    ============================= -->
 
-            <p class="text-muted text-uppercase fw-semibold mb-2">
-                Reactor Status
-            </p>
+    <section class="prediction-hero">
+
+        <div class="prediction-hero-content">
+
+            <div>
+
+                <div class="section-label">
+                    NEXT-STEP PREDICTION
+                </div>
+
+                <h2>
+                    Predicted Reactor Temperature
+                </h2>
+
+                <p>
+                    Estimasi temperatur reactor pada
+                    timestep berikutnya berdasarkan
+                    kondisi saat ini.
+                </p>
+
+            </div>
+
+
+            <div class="prediction-value">
+
+                <span id="predictedTemperature">
+                    —
+                </span>
+
+                <small>
+                    °C
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="prediction-meta">
+
+            <div>
+                <span>Prediction Error</span>
+                <strong id="predictionErrorValue">
+                    —
+                </strong>
+            </div>
+
+
+            <div>
+                <span>Monitoring Status</span>
+                <strong id="monitoringStatus">
+                    Waiting
+                </strong>
+            </div>
+
+
+            <div>
+                <span>Last Prediction</span>
+                <strong id="predictionTimestamp">
+                    —
+                </strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================
+         SENSOR CARDS
+    ============================= -->
+
+    <section class="sensor-grid">
+
+
+        <div class="sensor-card">
+
+            <div class="sensor-icon">
+                T
+            </div>
+
+            <div class="sensor-label">
+                Reactor Temperature
+            </div>
 
             <div
-                id="reactorStatusIndicator"
-                class="reactor-status-indicator status-neutral mx-auto mb-3">
+                id="temperatureValue"
+                class="sensor-value"
+            >
+                —
             </div>
 
-            <h2
-                id="reactorStatus"
-                class="fw-bold mb-2">
-                No Prediction
-            </h2>
-
-            <p
-                id="predictionProbability"
-                class="text-muted mb-1">
-                Probability: -
-            </p>
-
-            <small
-                id="predictionTimestamp"
-                class="text-muted">
-                Last prediction: -
-            </small>
+            <div class="sensor-unit">
+                °C
+            </div>
 
         </div>
 
-    </div>
 
-</section>
+        <div class="sensor-card">
+
+            <div class="sensor-icon">
+                F
+            </div>
+
+            <div class="sensor-label">
+                Jacket Flow Rate
+            </div>
+
+            <div
+                id="coolantValue"
+                class="sensor-value"
+            >
+                —
+            </div>
+
+            <div class="sensor-unit">
+                L/min
+            </div>
+
+        </div>
 
 
-<!-- ========================================
-     SENSOR CARDS
-======================================== -->
+        <div class="sensor-card">
 
-<section class="container mb-4">
+            <div class="sensor-icon">
+                P
+            </div>
 
-    <div class="row g-3">
+            <div class="sensor-label">
+                Pressure
+            </div>
 
-        <!-- Temperature -->
-        <div class="col-12 col-md-6 col-xl">
-            <div class="card sensor-card shadow-sm h-100">
+            <div
+                id="pressureValue"
+                class="sensor-value"
+            >
+                —
+            </div>
 
-                <div class="card-body">
+            <div class="sensor-unit">
+                atm
+            </div>
 
-                    <div class="sensor-icon">
-                        T
+        </div>
+
+
+        <div class="sensor-card">
+
+            <div class="sensor-icon">
+                A
+            </div>
+
+            <div class="sensor-label">
+                Reactant A
+            </div>
+
+            <div
+                id="reactantValue"
+                class="sensor-value"
+            >
+                —
+            </div>
+
+            <div class="sensor-unit">
+                mol/L
+            </div>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+            <div class="sensor-icon">
+                B
+            </div>
+
+            <div class="sensor-label">
+                Product B
+            </div>
+
+            <div
+                id="productValue"
+                class="sensor-value"
+            >
+                —
+            </div>
+
+            <div class="sensor-unit">
+                mol/L
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ============================
+         MONITORING + RL
+    ============================= -->
+
+    <section class="content-grid">
+
+
+        <!-- Prediction Monitoring -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="section-label">
+                        MONITORING
                     </div>
 
-                    <p class="text-muted mb-1">
-                        Temperature
-                    </p>
-
-                    <h3
-                        id="temperatureValue"
-                        class="fw-bold mb-1">
-                        -
+                    <h3>
+                        Prediction Deviation
                     </h3>
 
-                    <span class="text-muted">
-                        °C
+                </div>
+
+            </div>
+
+
+            <div class="monitoring-panel">
+
+                <div class="monitoring-status">
+                    <span
+                        id="monitoringIndicator"
+                        class="monitoring-dot neutral">
                     </span>
 
-                </div>
+                    <div>
 
-            </div>
-        </div>
+                        <strong id="monitoringTitle">
+                            Waiting for prediction
+                        </strong>
 
-
-        <!-- Coolant Flow -->
-        <div class="col-12 col-md-6 col-xl">
-            <div class="card sensor-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="sensor-icon">
-                        C
-                    </div>
-
-                    <p class="text-muted mb-1">
-                        Coolant Flow
-                    </p>
-
-                    <h3
-                        id="coolantValue"
-                        class="fw-bold mb-1">
-                        -
-                    </h3>
-
-                    <span class="text-muted">
-                        L/min
-                    </span>
-
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Pressure -->
-        <div class="col-12 col-md-6 col-xl">
-            <div class="card sensor-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="sensor-icon">
-                        P
-                    </div>
-
-                    <p class="text-muted mb-1">
-                        Pressure
-                    </p>
-
-                    <h3
-                        id="pressureValue"
-                        class="fw-bold mb-1">
-                        -
-                    </h3>
-
-                    <span class="text-muted">
-                        atm
-                    </span>
-
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Reactant A -->
-        <div class="col-12 col-md-6 col-xl">
-            <div class="card sensor-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="sensor-icon">
-                        A
-                    </div>
-
-                    <p class="text-muted mb-1">
-                        Reactant A
-                    </p>
-
-                    <h3
-                        id="reactantValue"
-                        class="fw-bold mb-1">
-                        -
-                    </h3>
-
-                    <span class="text-muted">
-                        mol/L
-                    </span>
-
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Product B -->
-        <div class="col-12 col-md-6 col-xl">
-            <div class="card sensor-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="sensor-icon">
-                        B
-                    </div>
-
-                    <p class="text-muted mb-1">
-                        Product B
-                    </p>
-
-                    <h3
-                        id="productValue"
-                        class="fw-bold mb-1">
-                        -
-                    </h3>
-
-                    <span class="text-muted">
-                        mol/L
-                    </span>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ========================================
-     TREND + RECOMMENDATION
-======================================== -->
-
-<section class="container mb-4">
-
-    <div class="row g-4">
-
-        <!-- Trend Chart -->
-        <div class="col-12 col-lg-8">
-
-            <div class="card dashboard-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <div>
-                            <h5 class="fw-bold mb-1">
-                                Sensor Trend
-                            </h5>
-
-                            <p class="text-muted small mb-0">
-                                Temperature, pressure, and coolant flow
-                            </p>
-                        </div>
-
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="sensorTrendChart"></canvas>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Recommendation -->
-        <div class="col-12 col-lg-4">
-
-            <div class="card dashboard-card recommendation-card shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <p class="text-muted text-uppercase small fw-semibold mb-2">
-                        Q-Learning
-                    </p>
-
-                    <h5 class="fw-bold mb-3">
-                        Recommended Action
-                    </h5>
-
-                    <div class="recommendation-box">
-
-                        <div
-                            id="recommendationAction"
-                            class="recommendation-action">
-                            No recommendation
-                        </div>
-
-                        <p
-                            id="recommendationDescription"
-                            class="text-muted small mb-0">
-                            Run a prediction to receive a recommendation.
+                        <p id="monitoringDescription">
+                            Run a prediction to calculate
+                            the difference between predicted
+                            and actual next temperature.
                         </p>
 
                     </div>
 
-                    <small class="text-muted d-block mt-3">
-                        Recommendation berasal dari model simulasi dan
-                        bukan instruksi keselamatan otomatis.
-                    </small>
+                </div>
+
+
+                <div class="formula-box">
+
+                    <span>
+                        Prediction Error
+                    </span>
+
+                    <strong>
+                        | Actual T(t+1) − Predicted T(t+1) |
+                    </strong>
 
                 </div>
 
@@ -352,292 +358,356 @@ Dashboard - Reactor Monitoring
 
         </div>
 
-    </div>
 
-</section>
+        <!-- RL -->
 
+        <div class="dashboard-card rl-card">
 
-<!-- ========================================
-     PREDICTION PANEL
-======================================== -->
+            <div class="card-header">
 
-<section class="container mb-4">
+                <div>
 
-    <div class="card dashboard-card shadow-sm">
+                    <div class="section-label">
+                        DECISION SUPPORT
+                    </div>
 
-        <div class="card-body">
+                    <h3>
+                        RL Recommendation
+                    </h3>
 
-            <div class="mb-4">
-                <h5 class="fw-bold mb-1">
-                    Reactor Prediction
-                </h5>
+                </div>
 
-                <p class="text-muted mb-0">
-                    Masukkan lima parameter reaktor untuk menjalankan
-                    prediksi kondisi.
-                </p>
             </div>
 
 
-            <form id="predictionForm">
+            <div class="rl-action">
 
-                <div class="row g-3">
-
-                    <!-- Temperature -->
-                    <div class="col-12 col-md-6">
-
-                        <label
-                            for="reactorTemp"
-                            class="form-label">
-                            Reactor Temperature
-                        </label>
-
-                        <div class="input-group">
-
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="reactorTemp"
-                                name="Reactor_Temp_C"
-                                step="any"
-                                placeholder="Contoh: 95">
-
-                            <span class="input-group-text">
-                                °C
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Coolant -->
-                    <div class="col-12 col-md-6">
-
-                        <label
-                            for="jacketFlow"
-                            class="form-label">
-                            Coolant Flow
-                        </label>
-
-                        <div class="input-group">
-
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="jacketFlow"
-                                name="Jacket_Flow_Rate_L_min"
-                                step="any"
-                                placeholder="Contoh: 1000">
-
-                            <span class="input-group-text">
-                                L/min
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Pressure -->
-                    <div class="col-12 col-md-4">
-
-                        <label
-                            for="pressure"
-                            class="form-label">
-                            Pressure
-                        </label>
-
-                        <div class="input-group">
-
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="pressure"
-                                name="Pressure_atm"
-                                step="any"
-                                placeholder="Contoh: 3.2">
-
-                            <span class="input-group-text">
-                                atm
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Reactant -->
-                    <div class="col-12 col-md-4">
-
-                        <label
-                            for="reactantA"
-                            class="form-label">
-                            Reactant A
-                        </label>
-
-                        <div class="input-group">
-
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="reactantA"
-                                name="Reactant_A_Conc_mol_L"
-                                step="any"
-                                placeholder="Contoh: 1.2">
-
-                            <span class="input-group-text">
-                                mol/L
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Product -->
-                    <div class="col-12 col-md-4">
-
-                        <label
-                            for="productB"
-                            class="form-label">
-                            Product B
-                        </label>
-
-                        <div class="input-group">
-
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="productB"
-                                name="Product_B_Conc_mol_L"
-                                step="any"
-                                placeholder="Contoh: 0.8">
-
-                            <span class="input-group-text">
-                                mol/L
-                            </span>
-
-                        </div>
-
-                    </div>
-
+                <div class="rl-action-label">
+                    Recommended Jacket Flow Action
                 </div>
 
-
-                <!-- Error -->
                 <div
-                    id="predictionError"
-                    class="alert alert-danger d-none mt-3">
-                    <span id="predictionErrorText"></span>
+                    id="recommendationAction"
+                    class="rl-action-value"
+                >
+                    —
                 </div>
 
+                <p id="recommendationDescription">
+                    RL recommendation will appear here
+                    after the simulation is configured.
+                </p>
 
-                <!-- Button -->
-                <div class="mt-4">
+            </div>
 
-                    <button
-                        type="submit"
-                        id="predictButton"
-                        class="btn btn-primary">
 
-                        <span
-                            id="predictSpinner"
-                            class="spinner-border spinner-border-sm d-none me-2"
-                            aria-hidden="true">
+            <div class="simulation-note">
+
+                Simulation only.
+                This recommendation is not a direct
+                command to a physical reactor.
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ============================
+         SENSOR TREND
+    ============================= -->
+
+    <section class="dashboard-card chart-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="section-label">
+                    SENSOR TREND
+                </div>
+
+                <h3>
+                    Reactor State
+                </h3>
+
+                <p>
+                    Current reactor measurements
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+            <canvas id="sensorTrendChart"></canvas>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================
+         INPUT
+    ============================= -->
+
+    <section class="dashboard-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="section-label">
+                    MODEL INPUT
+                </div>
+
+                <h3>
+                    Reactor Current State
+                </h3>
+
+                <p>
+                    Masukkan kondisi reactor saat ini
+                    untuk menghasilkan prediksi timestep berikutnya.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form id="predictionForm">
+
+
+            <div class="input-grid">
+
+
+                <div class="input-field">
+
+                    <label for="reactorTemp">
+                        Reactor Temperature
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="reactorTemp"
+                            name="Reactor_Temp_C"
+                            step="any"
+                            placeholder="95"
+                        >
+
+                        <span>
+                            °C
                         </span>
 
-                        Run Prediction
-
-                    </button>
+                    </div>
 
                 </div>
 
-            </form>
 
-        </div>
+                <div class="input-field">
 
-    </div>
+                    <label for="jacketFlow">
+                        Jacket Flow Rate
+                    </label>
 
-</section>
+                    <div class="input-with-unit">
 
+                        <input
+                            type="number"
+                            id="jacketFlow"
+                            name="Jacket_Flow_Rate_L_min"
+                            step="any"
+                            placeholder="1000"
+                        >
 
-<!-- ========================================
-     QUICK ACTIONS
-======================================== -->
-
-<section class="container mb-5">
-
-    <div class="row g-3">
-
-        <div class="col-12 col-md-6">
-
-            <a
-                href="/simulation"
-                class="text-decoration-none">
-
-                <div class="card quick-action-card shadow-sm">
-
-                    <div class="card-body">
-
-                        <h5 class="fw-bold">
-                            What-If Simulation
-                        </h5>
-
-                        <p class="text-muted mb-0">
-                            Simulasikan kondisi reaktor tanpa
-                            menganggapnya sebagai data sensor aktual.
-                        </p>
+                        <span>
+                            L/min
+                        </span>
 
                     </div>
 
                 </div>
 
-            </a>
 
-        </div>
+                <div class="input-field">
 
+                    <label for="pressure">
+                        Pressure
+                    </label>
 
-        <div class="col-12 col-md-6">
+                    <div class="input-with-unit">
 
-            <a
-                href="/history"
-                class="text-decoration-none">
+                        <input
+                            type="number"
+                            id="pressure"
+                            name="Pressure_atm"
+                            step="any"
+                            placeholder="3.2"
+                        >
 
-                <div class="card quick-action-card shadow-sm">
-
-                    <div class="card-body">
-
-                        <h5 class="fw-bold">
-                            Prediction History
-                        </h5>
-
-                        <p class="text-muted mb-0">
-                            Lihat riwayat hasil monitoring dan
-                            rekomendasi model.
-                        </p>
+                        <span>
+                            atm
+                        </span>
 
                     </div>
 
                 </div>
 
-            </a>
 
-        </div>
+                <div class="input-field">
 
-    </div>
+                    <label for="reactantA">
+                        Reactant A
+                    </label>
 
-</section>
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="reactantA"
+                            name="Reactant_A_Conc_mol_L"
+                            step="any"
+                            placeholder="1.2"
+                        >
+
+                        <span>
+                            mol/L
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-field">
+
+                    <label for="productB">
+                        Product B
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="productB"
+                            name="Product_B_Conc_mol_L"
+                            step="any"
+                            placeholder="0.8"
+                        >
+
+                        <span>
+                            mol/L
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="predictionError"
+                class="error-box d-none"
+            >
+                <span id="predictionErrorText"></span>
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    id="predictButton"
+                    class="primary-button"
+                >
+
+                    <span
+                        id="predictSpinner"
+                        class="spinner-border spinner-border-sm d-none me-2"
+                    ></span>
+
+                    Run Prediction
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </section>
+
+
+    <!-- ============================
+         QUICK NAVIGATION
+    ============================= -->
+
+    <section class="quick-grid">
+
+        
+
+
+        <a
+            href="/history"
+            class="quick-card"
+        >
+
+            <span>
+                HISTORY
+            </span>
+
+            <h3>
+                Prediction History
+            </h3>
+
+            <p>
+                Review previous predictions,
+                actual values, and prediction errors.
+            </p>
+
+        </a>
+
+
+        <a
+            href="/model-info"
+            class="quick-card"
+        >
+
+            <span>
+                MODEL
+            </span>
+
+            <h3>
+                Model Information
+            </h3>
+
+            <p>
+                Learn how the supervised prediction
+                and RL simulation layers work.
+            </p>
+
+        </a>
+
+    </section>
+
+
+</div>
 
 {% endblock %}
 
 
 {% block scripts %}
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Dashboard JavaScript -->
 <script
     src="{{ url_for('static', filename='js/dashboard.js') }}">
 </script>

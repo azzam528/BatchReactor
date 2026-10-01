@@ -47,7 +47,6 @@ async function loadHistory() {
     );
 
 
-    // Reset display
     loading.classList.remove("d-none");
     empty.classList.add("d-none");
     error.classList.add("d-none");
@@ -73,21 +72,6 @@ async function loadHistory() {
         const result = await response.json();
 
 
-        /*
-         * Backend may return:
-         *
-         * [
-         *     {...},
-         *     {...}
-         * ]
-         *
-         * or:
-         *
-         * {
-         *     "history": [...]
-         * }
-         */
-
         const records = Array.isArray(result)
             ? result
             : result.history;
@@ -102,7 +86,6 @@ async function loadHistory() {
         }
 
 
-        // Add records to table
         records.forEach(function (record) {
 
             const row = createHistoryRow(record);
@@ -139,7 +122,10 @@ function createHistoryRow(record) {
     const row = document.createElement("tr");
 
 
-    // Time
+    /* ------------------------------------
+       Time
+    ------------------------------------ */
+
     const timeCell = document.createElement("td");
 
     timeCell.textContent =
@@ -148,17 +134,26 @@ function createHistoryRow(record) {
     row.appendChild(timeCell);
 
 
-    // Temperature
+    /* ------------------------------------
+       Current Temperature
+    ------------------------------------ */
+
     const temperatureCell =
         document.createElement("td");
 
     temperatureCell.textContent =
-        formatValue(record.Reactor_Temp_C, "°C");
+        formatValue(
+            record.Reactor_Temp_C,
+            " °C"
+        );
 
     row.appendChild(temperatureCell);
 
 
-    // Coolant Flow
+    /* ------------------------------------
+       Jacket Flow
+    ------------------------------------ */
+
     const coolantCell =
         document.createElement("td");
 
@@ -171,7 +166,10 @@ function createHistoryRow(record) {
     row.appendChild(coolantCell);
 
 
-    // Pressure
+    /* ------------------------------------
+       Pressure
+    ------------------------------------ */
+
     const pressureCell =
         document.createElement("td");
 
@@ -184,7 +182,10 @@ function createHistoryRow(record) {
     row.appendChild(pressureCell);
 
 
-    // Reactant A
+    /* ------------------------------------
+       Reactant A
+    ------------------------------------ */
+
     const reactantCell =
         document.createElement("td");
 
@@ -197,7 +198,10 @@ function createHistoryRow(record) {
     row.appendChild(reactantCell);
 
 
-    // Product B
+    /* ------------------------------------
+       Product B
+    ------------------------------------ */
+
     const productCell =
         document.createElement("td");
 
@@ -210,78 +214,99 @@ function createHistoryRow(record) {
     row.appendChild(productCell);
 
 
-    // Prediction
+    /* ------------------------------------
+       Predicted T(t+1)
+    ------------------------------------ */
+
     const predictionCell =
         document.createElement("td");
 
-    const predictionBadge =
-        document.createElement("span");
-
-    predictionBadge.classList.add(
-        "badge"
-    );
-
-
-    const status =
-        record.status ||
-        record.predicted_class;
-
-
-    if (
-        status === "NORMAL" ||
-        status === 0 ||
-        status === "0"
-    ) {
-
-        predictionBadge.classList.add(
-            "bg-success"
+    predictionCell.textContent =
+        formatValue(
+            record.predicted_temperature ??
+            record.predicted_temperature_next ??
+            record.prediction,
+            " °C"
         );
-
-        predictionBadge.textContent =
-            "NORMAL";
-
-    } else if (
-        status === "DEFECT" ||
-        status === 1 ||
-        status === "1"
-    ) {
-
-        predictionBadge.classList.add(
-            "bg-danger"
-        );
-
-        predictionBadge.textContent =
-            "DEFECT";
-
-    } else {
-
-        predictionBadge.classList.add(
-            "bg-secondary"
-        );
-
-        predictionBadge.textContent =
-            status || "—";
-
-    }
-
-
-    predictionCell.appendChild(
-        predictionBadge
-    );
 
     row.appendChild(predictionCell);
 
 
-    // Probability
-    const probabilityCell =
+    /* ------------------------------------
+       Prediction Error
+    ------------------------------------ */
+
+    const errorCell =
         document.createElement("td");
 
-    probabilityCell.textContent =
-        formatProbability(
-            record.probability
+    const predictionError =
+        record.prediction_error ??
+        record.error_value ??
+        record.absolute_error;
+
+
+    errorCell.textContent =
+        formatValue(
+            predictionError,
+            " °C"
         );
 
-    row.appendChild(probabilityCell);
+    row.appendChild(errorCell);
+
+
+    /* ------------------------------------
+       Monitoring
+    ------------------------------------ */
+
+    const monitoringCell =
+        document.createElement("td");
+
+    const monitoringBadge =
+        document.createElement("span");
+
+    monitoringBadge.classList.add(
+        "badge"
+    );
+
+
+    /*
+     * Kita belum menetapkan threshold anomaly.
+     *
+     * Jadi untuk sementara UI hanya membedakan:
+     * - Error tersedia
+     * - Belum ada actual T(t+1)
+     */
+
+    if (
+        predictionError !== undefined &&
+        predictionError !== null &&
+        predictionError !== ""
+    ) {
+
+        monitoringBadge.classList.add(
+            "bg-secondary"
+        );
+
+        monitoringBadge.textContent =
+            "Error Available";
+
+    } else {
+
+        monitoringBadge.classList.add(
+            "bg-light",
+            "text-dark"
+        );
+
+        monitoringBadge.textContent =
+            "Waiting";
+    }
+
+
+    monitoringCell.appendChild(
+        monitoringBadge
+    );
+
+    row.appendChild(monitoringCell);
 
 
     return row;
@@ -312,47 +337,7 @@ function formatValue(value, unit) {
     }
 
 
-    return number + unit;
-
-}
-
-
-/* ========================================
-   FORMAT PROBABILITY
-======================================== */
-
-function formatProbability(probability) {
-
-    if (
-        probability === undefined ||
-        probability === null ||
-        probability === ""
-    ) {
-        return "—";
-    }
-
-
-    let value = Number(probability);
-
-
-    if (Number.isNaN(value)) {
-        return "—";
-    }
-
-
-    /*
-     * Support both:
-     *
-     * 0.93
-     * 93
-     */
-
-    if (value <= 1) {
-        value = value * 100;
-    }
-
-
-    return value.toFixed(2) + "%";
+    return number.toFixed(2) + unit;
 
 }
 
