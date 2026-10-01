@@ -23,8 +23,13 @@ class PredictionHistory(Base):
     reactant_a_concentration: Mapped[float] = mapped_column(Float, nullable=False)
     product_b_concentration: Mapped[float] = mapped_column(Float, nullable=False)
 
-    predicted_class: Mapped[str] = mapped_column(String(50), nullable=False)
-    probability: Mapped[float] = mapped_column(Float, nullable=False)
+    # Kolom lama (klasifikasi), sekarang boleh kosong karena model baru memprediksi suhu
+    predicted_class: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    probability: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    # Kolom baru untuk model regresi suhu
+    predicted_temperature: Mapped[float | None] = mapped_column(Float, nullable=True)
+    prediction_error: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
 class SimulationHistory(Base):
@@ -44,8 +49,13 @@ class SimulationHistory(Base):
     reactant_a_concentration: Mapped[float] = mapped_column(Float, nullable=False)
     product_b_concentration: Mapped[float] = mapped_column(Float, nullable=False)
 
-    predicted_class: Mapped[str] = mapped_column(String(50), nullable=False)
-    probability: Mapped[float] = mapped_column(Float, nullable=False)
+    # Kolom lama (klasifikasi), sekarang boleh kosong karena model baru memprediksi suhu
+    predicted_class: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    probability: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    # Kolom baru untuk model regresi suhu
+    predicted_temperature: Mapped[float | None] = mapped_column(Float, nullable=True)
+    prediction_error: Mapped[float | None] = mapped_column(Float, nullable=True)
     recommended_action: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
