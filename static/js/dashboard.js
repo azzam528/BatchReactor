@@ -10,13 +10,28 @@ document.addEventListener("DOMContentLoaded", function () {
         "predictionErrorText"
     );
 
-    const reactorStatus = document.getElementById("reactorStatus");
-    const reactorStatusIndicator = document.getElementById(
-        "reactorStatusIndicator"
+    const predictedTemperature = document.getElementById(
+        "predictedTemperature"
     );
 
-    const predictionProbability = document.getElementById(
-        "predictionProbability"
+    const predictionErrorValue = document.getElementById(
+        "predictionErrorValue"
+    );
+
+    const monitoringStatus = document.getElementById(
+        "monitoringStatus"
+    );
+
+    const monitoringIndicator = document.getElementById(
+        "monitoringIndicator"
+    );
+
+    const monitoringTitle = document.getElementById(
+        "monitoringTitle"
+    );
+
+    const monitoringDescription = document.getElementById(
+        "monitoringDescription"
     );
 
     const predictionTimestamp = document.getElementById(
@@ -26,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const recommendationAction = document.getElementById(
         "recommendationAction"
     );
+
     const recommendationDescription = document.getElementById(
         "recommendationDescription"
     );
@@ -86,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         tension: 0.3
                     },
                     {
-                        label: "Coolant Flow (L/min)",
+                        label: "Jacket Flow (L/min)",
                         data: [],
                         tension: 0.3
                     }
@@ -171,7 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 } finally {
 
                     setLoading(false);
-
                 }
             }
         );
@@ -263,96 +278,171 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updatePredictionResult(result) {
 
+        /*
+         * Backend baru seharusnya mengembalikan
+         * predicted next reactor temperature.
+         */
 
-        if (recommendationAction) {
-            recommendationAction.textContent =
-                result.recommended_action || "No recommendation";
-        }
+        const predictedTemp =
+            result.predicted_temperature ??
+            result.predicted_temperature_next ??
+            result.predicted_temp ??
+            result.prediction;
 
-        if (recommendationDescription) {
-            recommendationDescription.textContent =
-                result.recommendation_description ||
-                "Run a prediction to receive a recommendation.";
-        }
-
-        const status = (
-            result.status ||
-            "UNKNOWN"
-        ).toUpperCase();
-
-        reactorStatus.textContent = status;
-
-        reactorStatusIndicator.classList.remove(
-            "status-neutral",
-            "status-normal",
-            "status-defect",
-            "status-warning"
-        );
-
-
-        if (status === "NORMAL") {
-
-            reactorStatusIndicator.classList.add(
-                "status-normal"
-            );
-
-        } else if (status === "DEFECT") {
-
-            reactorStatusIndicator.classList.add(
-                "status-defect"
-            );
-
-        } else {
-
-            reactorStatusIndicator.classList.add(
-                "status-warning"
-            );
-        }
-
-
-        /* Probability */
 
         if (
-            result.probability !== undefined &&
-            result.probability !== null
+            predictedTemp !== undefined &&
+            predictedTemp !== null &&
+            !Number.isNaN(Number(predictedTemp))
         ) {
 
-            let probability = Number(
-                result.probability
-            );
-
-            /*
-             * Backend biasanya mengembalikan
-             * probability dalam bentuk 0-1.
-             */
-
-            if (probability <= 1) {
-                probability *= 100;
-            }
-
-            predictionProbability.textContent =
-                `Probability: ${probability.toFixed(2)}%`;
+            predictedTemperature.textContent =
+                formatNumber(Number(predictedTemp));
 
         } else {
 
-            predictionProbability.textContent =
-                "Probability: -";
+            predictedTemperature.textContent = "—";
         }
 
 
-        /* Timestamp */
+        /*
+         * Prediction error hanya tersedia apabila
+         * actual T(t+1) tersedia.
+         */
+
+        const errorValue =
+            result.prediction_error ??
+            result.error_value ??
+            result.absolute_error;
+
+
+        if (
+            errorValue !== undefined &&
+            errorValue !== null &&
+            !Number.isNaN(Number(errorValue))
+        ) {
+
+            predictionErrorValue.textContent =
+                `${formatNumber(Number(errorValue))} °C`;
+
+            updateMonitoringState(Number(errorValue));
+
+        } else {
+
+            predictionErrorValue.textContent = "—";
+
+            setMonitoringWaiting();
+        }
+
+
+        /*
+         * RL recommendation
+         */
+
+        if (recommendationAction) {
+
+            recommendationAction.textContent =
+                result.recommended_action ||
+                result.action ||
+                "—";
+        }
+
+
+        if (recommendationDescription) {
+
+            recommendationDescription.textContent =
+                result.recommendation_description ||
+                result.action_description ||
+                "RL recommendation akan ditampilkan setelah simulation environment dikonfigurasi.";
+        }
+
+
+        /*
+         * Timestamp
+         */
 
         if (result.timestamp) {
 
             predictionTimestamp.textContent =
-                `Last prediction: ${formatTimestamp(
-                    result.timestamp
-                )}`;
+                formatTimestamp(result.timestamp);
 
         } else {
 
-            predictionTimestamp.textContent =
-                "Last prediction: -";
+            predictionTimestamp.textContent = "—";
+        }
+    }
+
+
+    /* ========================================
+       MONITORING STATE
+    ======================================== */
+
+    function setMonitoringWaiting() {
+
+        if (monitoringStatus) {
+            monitoringStatus.textContent = "Waiting";
+        }
+
+        if (monitoringTitle) {
+            monitoringTitle.textContent =
+                "Waiting for actual next temperature";
+        }
+
+        if (monitoringDescription) {
+            monitoringDescription.textContent =
+                "Prediction error akan dihitung ketika actual T(t+1) tersedia.";
+        }
+
+        if (monitoringIndicator) {
+
+            monitoringIndicator.classList.remove(
+                "normal",
+                "warning",
+                "neutral"
+            );
+
+            monitoringIndicator.classList.add(
+                "neutral"
+            );
+        }
+    }
+
+
+    function updateMonitoringState(errorValue) {
+
+        /*
+         * Jangan membuat threshold anomaly
+         * secara sembarangan.
+         *
+         * Untuk sementara status hanya menunjukkan
+         * bahwa prediction error tersedia.
+         */
+
+        if (monitoringStatus) {
+            monitoringStatus.textContent = "Error Available";
+        }
+
+        if (monitoringTitle) {
+            monitoringTitle.textContent =
+                "Prediction deviation available";
+        }
+
+        if (monitoringDescription) {
+            monitoringDescription.textContent =
+                `Prediction error saat ini ${formatNumber(errorValue)} °C.`;
+        }
+
+        if (monitoringIndicator) {
+
+            monitoringIndicator.classList.remove(
+                "normal",
+                "warning",
+                "neutral"
+            );
+
+            monitoringIndicator.classList.add(
+                "neutral"
+            );
         }
     }
 
@@ -382,25 +472,24 @@ document.addEventListener("DOMContentLoaded", function () {
             currentTime
         );
 
+
         sensorTrendChart.data.datasets[0].data.push(
             data.Reactor_Temp_C
         );
 
+
         sensorTrendChart.data.datasets[1].data.push(
             data.Pressure_atm
         );
+
 
         sensorTrendChart.data.datasets[2].data.push(
             data.Jacket_Flow_Rate_L_min
         );
 
 
-        /*
-         * Batasi jumlah titik agar chart
-         * tidak terlalu panjang.
-         */
-
         const maxPoints = 10;
+
 
         if (
             sensorTrendChart.data.labels.length >
@@ -433,6 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         predictButton.disabled = isLoading;
 
+
         if (isLoading) {
 
             predictSpinner.classList.remove(
@@ -462,6 +552,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showError(message) {
 
+        if (!predictionError || !predictionErrorText) {
+            return;
+        }
+
         predictionErrorText.textContent =
             message;
 
@@ -472,6 +566,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function hideError() {
+
+        if (!predictionError || !predictionErrorText) {
+            return;
+        }
 
         predictionError.classList.add(
             "d-none"
@@ -487,11 +585,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function formatNumber(value) {
 
-        if (Number.isInteger(value)) {
-            return value;
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return "—";
         }
 
-        return Number(value).toFixed(2);
+        return number.toFixed(2);
     }
 
 

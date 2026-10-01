@@ -1,0 +1,84 @@
+{
+  "model_type": "RandomForestRegressor",
+  "model_version": "rf-t1-v0.2",
+  "trained_at": "2026-10-01T03:02:54",
+  "target": "Reactor_Temp_C(t+1)",
+  "features_in_order": [
+    "Reactor_Temp_C",
+    "Jacket_Flow_Rate_L_min",
+    "Pressure_atm",
+    "Reactant_A_Conc_mol_L",
+    "Product_B_Conc_mol_L"
+  ],
+  "hyperparameters": {
+    "max_depth": 12,
+    "max_features": 1.0,
+    "min_samples_leaf": 5,
+    "n_estimators": 200,
+    "random_state": 42
+  },
+  "preprocessing": {
+    "scaling": "none",
+    "missing_value": "baris kosong dibuang (tanpa imputasi)",
+    "expected_time_step_min": 1.0
+  },
+  "train_ranges": {
+    "Reactor_Temp_C": [
+      60.5,
+      110.0
+    ],
+    "Jacket_Flow_Rate_L_min": [
+      936.0,
+      1063.0
+    ],
+    "Pressure_atm": [
+      2.22,
+      4.49
+    ],
+    "Reactant_A_Conc_mol_L": [
+      0.0,
+      2.5
+    ],
+    "Product_B_Conc_mol_L": [
+      0.0,
+      2.5
+    ]
+  },
+  "n_train_samples": 4873,
+  "n_train_runs": 27,
+  "evaluation_on_test_split": {
+    "Random Forest": {
+      "MAE_C": 0.4937129001516758,
+      "RMSE_C": 0.7843770777951371,
+      "R2": 0.986987475563656
+    },
+    "Baseline naif": {
+      "MAE_C": 0.7254769475357704,
+      "RMSE_C": 1.7265594550056238,
+      "R2": 0.9369514871573983
+    }
+  },
+  "cv_mae_mean_std_c": [
+    0.35510405098346526,
+    0.13317773384061732
+  ],
+  "anomaly": {
+    "definition": "|Actual(t+1) - Predicted(t+1)|; threshold dari error out-of-fold seluruh run",
+    "threshold_options_celsius": {
+      "p90": 0.9284356661836318,
+      "p95": 1.3085633538330337,
+      "p99": 2.2499502715662283,
+      "mean_plus_2std": 2.3057078530947455,
+      "mean_plus_3std": 3.279549155761027
+    },
+    "provisional_threshold_key": "p95",
+    "status": "SEMENTARA - belum diputuskan tim",
+    "disclaimer": "Threshold bukan batas keselamatan. Anomaly bukan defect dan bukan unsafe condition."
+  },
+  "library_versions": {
+    "python": "3.13.15",
+    "scikit-learn": "1.6.1",
+    "pandas": "2.2.3",
+    "numpy": "2.1.3"
+  }
+}
