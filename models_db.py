@@ -26,18 +26,6 @@ class PredictionHistory(Base):
     predicted_class: Mapped[str] = mapped_column(String(50), nullable=False)
     probability: Mapped[float] = mapped_column(Float, nullable=False)
 
-
-class SimulationHistory(Base):
-    __tablename__ = "simulation_history"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
-    )
-
     reactor_temperature: Mapped[float] = mapped_column(Float, nullable=False)
     jacket_flow_rate: Mapped[float] = mapped_column(Float, nullable=False)
     pressure: Mapped[float] = mapped_column(Float, nullable=False)

@@ -5,12 +5,8 @@ import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request, jsonify
 
-try:
-    from database import SessionLocal
-    from models_db import PredictionHistory
-except Exception:
-    SessionLocal = None
-    PredictionHistory = None
+from database import SessionLocal
+from models_db import PredictionHistory
 
 app = Flask(__name__)
 
@@ -119,6 +115,17 @@ def save_record(model_cls, **fields):
 def home():
     return render_template("index.html")
 
+
+@app.route("/simulation")
+def simulation():
+    return render_template("simulation.html")
+
+
+@app.route("/reinforcement")
+def reinforcement():
+    return render_template("reinforcement.html")
+
+
 @app.route("/model-info")
 def model_info():
     return render_template("model_info.html")
@@ -134,7 +141,7 @@ def history():
 
 
 # ========================================
-# API - FRONTEND (Dashboard, History, Status)
+# API - FRONTEND (Dashboard, Simulation, History, Status)
 # ========================================
 
 @app.route("/health")
@@ -172,11 +179,32 @@ def predict():
         "timestamp": datetime.now().isoformat(timespec="seconds"),
     })
 
+
+@app.route("/simulate", methods=["POST"])
+def simulate():
+    try:
+        v = parse_input(request.get_json(silent=True))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    status, prob, _ = run_prediction(v)
+    action, desc, _, _ = run_recommendation(v)
+    save_record( **db_fields(v, status, prob), recommended_action=action)
+    return jsonify({
+        "status": status,
+        "predicted_class": status,
+        "probability": prob,
+        "recommended_action": action,
+        "recommendation_description": desc,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+    })
+
+
 def history_data():
     rows = []
     try:
         with SessionLocal() as session:
-            for cls, source in [(PredictionHistory, "predict")]:
+            for cls, source in ((PredictionHistory, "predict"), (SimulationHistory, "simulate")):
                 for r in session.query(cls).order_by(cls.id.desc()).limit(50):
                     rows.append({
                         "timestamp": r.created_at.isoformat(timespec="seconds"),

@@ -12,12 +12,11 @@ memakai model yang tersimpan di folder `models/`.
 | `GET` | `/health` | Cek server hidup |
 | `GET` | `/model/status` | Cek file model berhasil dimuat |
 | `POST` | `/predict` | Prediksi NORMAL/DEFECT + rekomendasi RL (dipakai Dashboard) |
-| `POST` | `/simulate` | Simulasi What-If (dipakai halaman Simulation) |
-| `GET` | `/history` | Riwayat prediksi dan simulasi dari database |
+| `GET` | `/history` | Riwayat prediksi dari database |
 | `POST` | `/api/predict-defect` | Prediksi lengkap dengan probabilitas kedua kelas (tanpa database) |
 | `POST` | `/api/reactor-control` | Rekomendasi Q-Learning lengkap dengan Q-value (tanpa database) |
 
-Halaman web (bukan API): `/`, `/simulation`, `/history` (dibuka lewat browser), `/model-info`, `/reinforcement`.
+Halaman web (bukan API): `/`, `/history` (dibuka lewat browser), `/model-info`, `/reinforcement`.
 
 ---
 
@@ -111,30 +110,9 @@ Menjalankan model Random Forest dan modul rekomendasi Q-Learning, lalu **menyimp
 
 ---
 
-## `POST /simulate`
-
-Sama seperti `/predict`, tetapi hasilnya disimpan ke tabel **`simulation_history`** (dianggap simulasi,
-bukan data sensor).
-
-**Response `200`**
-
-```json
-{
-  "status": "NORMAL",
-  "predicted_class": "NORMAL",
-  "probability": 0.99,
-  "recommended_action": "Pertahankan",
-  "recommendation_description": "Rekomendasi hasil simulasi Q-Learning, bukan instruksi kontrol otomatis.",
-  "timestamp": "2026-09-30T11:55:10"
-}
-```
-
----
-
 ## `GET /history`
 
-Mengambil hingga **50 riwayat terbaru** dari gabungan tabel `prediction_history` dan `simulation_history`,
-diurutkan dari yang terbaru.
+Mengambil hingga **50 riwayat terbaru** dari tabel `prediction_history`,
 
 > Alamat `/history` juga membuka halaman riwayat jika diakses lewat browser. Untuk mendapatkan JSON,
 > panggil dari `fetch()`/kode (bukan menempelkan alamat di browser).
@@ -152,17 +130,10 @@ diurutkan dari yang terbaru.
     "Product_B_Conc_mol_L": 0.5,
     "status": "NORMAL",
     "probability": 0.99,
-    "recommended_action": "Pertahankan",
-    "source": "simulate"
+    "recommended_action": "Pertahankan",  
   }
 ]
 ```
-
-| Field | Keterangan |
-|---|---|
-| `source` | `predict` atau `simulate` |
-| `recommended_action` | Terisi untuk `simulate`, `null` untuk `predict` |
-
 **Response `500`** — database tidak tersedia
 
 ```json

@@ -1,4 +1,4 @@
-# 🧪 Batch Reactor Anomaly — Reactor Monitoring & Anomaly Simulation Dashboard
+# 🧪 Batch Reactor Anomaly — Reactor Monitoring & Anomaly Dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-Backend-000000?logo=flask&logoColor=white)
@@ -6,7 +6,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
 
-Aplikasi web untuk memantau kondisi reaktor batch dan mensimulasikan skenario *what-if*.
+Aplikasi web untuk memantau kondisi reaktor batch dan memberikan prediksi serta rekomendasi berbasis Machine Learning.
 Proyek ini menggabungkan dua pendekatan Machine Learning dalam satu dashboard:
 
 | Modul | Algoritma | Fungsi |
@@ -14,17 +14,15 @@ Proyek ini menggabungkan dua pendekatan Machine Learning dalam satu dashboard:
 | **Supervised Learning** | Random Forest | Klasifikasi kondisi reaktor: `NORMAL` atau `DEFECT` |
 | **Reinforcement Learning** | Q-Learning | Rekomendasi aksi coolant: *Turunkan / Pertahankan / Naikkan* |
 
-> ⚠️ **Catatan penting:** aplikasi ini adalah dashboard **monitoring dan simulasi**, **bukan** sistem
-> keselamatan atau kontrol otomatis reaktor. Hasil model tidak boleh dihubungkan langsung ke
-> aktuator fisik. Lihat bagian [Keterbatasan](#-keterbatasan).
+> ⚠️ **Catatan penting:** aplikasi ini adalah dashboard **monitoring**, **bukan** sistem
+> keselamatan atau kontrol otomatis reaktor. Lihat bagian [Keterbatasan](#-keterbatasan).
 
 ---
 
 ## ✨ Fitur
 
 - 📊 **Dashboard** — input 5 parameter reaktor, status NORMAL/DEFECT, probabilitas, grafik tren, dan rekomendasi aksi
-- 🎛️ **Simulation (What-If)** — coba kombinasi parameter tanpa dianggap sebagai data sensor asli
-- 🕘 **History** — riwayat prediksi dan simulasi yang tersimpan di database
+- 🕘 **History** — riwayat prediksi yang tersimpan di database
 - ℹ️ **Model Info** — informasi model dan status file model
 - 💾 **Database PostgreSQL** — riwayat tersimpan permanen (migrasi dengan Alembic)
 - 🛡️ **Validasi input** — field kosong, bukan angka, atau tidak valid ditolak dengan pesan yang jelas
@@ -136,7 +134,6 @@ Buka **http://127.0.0.1:5000** di browser.
 | URL | Fungsi |
 |---|---|
 | `/` | Dashboard monitoring |
-| `/simulation` | Simulasi What-If |
 | `/history` | Riwayat prediksi dan simulasi |
 | `/model-info` | Informasi model |
 
