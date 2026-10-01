@@ -1,310 +1,927 @@
-/* ========================================
-   GLOBAL
-======================================== */
+:root {
+    --primary: #17365d;
+    --primary-light: #eaf1fb;
+    --text: #172033;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --background: #f5f7fb;
+    --card: #ffffff;
+    --success: #16835b;
+    --warning: #d97706;
+    --danger: #c0392b;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
 
 body {
-    background-color: #7fd4cd;
-    color: #212529;
-    font-family: Arial, sans-serif;
+    margin: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc 0%,
+            #f3f6fa 100%
+        );
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
-main {
-    min-height: calc(100vh - 120px);
-}
 
-
-/* ========================================
+/* ================================
    NAVBAR
-======================================== */
+================================ */
+
+.app-navbar {
+    background: #ffffff;
+
+    border-bottom: 1px solid var(--border);
+
+    min-height: 72px;
+}
+
 
 .navbar-brand {
-    letter-spacing: 0.5px;
-}
+    color: var(--primary) !important;
 
-.nav-link {
-    margin-left: 8px;
-}
-
-.nav-link:hover {
-    color: #ffffff;
-}
-
-
-/* ========================================
-   DASHBOARD HEADER
-======================================== */
-
-.dashboard-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.dashboard-header h1 {
-    color: #172033;
-}
-
-.system-status {
-    font-size: 14px;
-}
-
-.status-item {
     display: flex;
+
     align-items: center;
-    gap: 7px;
-}
 
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.status-unknown {
-    background-color: #6c757d;
-}
-
-.status-online {
-    background-color: #198754;
-}
-
-.status-offline {
-    background-color: #dc3545;
-}
-
-.status-warning {
-    background-color: #ffc107;
+    gap: 10px;
 }
 
 
-/* ========================================
-   REACTOR STATUS CARD
-======================================== */
+.brand-mark {
+    width: 36px;
+    height: 36px;
 
-.reactor-status-card {
-    border: none;
-    border-radius: 16px;
-    background-color: #ffffff;
-}
+    display: inline-flex;
 
-.reactor-status-indicator {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-}
-
-.status-neutral {
-    background-color: #6c757d;
-}
-
-.status-normal {
-    background-color: #198754;
-}
-
-.status-defect {
-    background-color: #dc3545;
-}
-
-.status-warning {
-    background-color: #ffc107;
-}
-
-#reactorStatus {
-    color: #172033;
-}
-
-
-/* ========================================
-   SENSOR CARDS
-======================================== */
-
-.sensor-card {
-    border: none;
-    border-radius: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.sensor-card:hover {
-    transform: translateY(-3px);
-}
-
-.sensor-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background-color: #e9f2ff;
-    color: #0d6efd;
-
-    display: flex;
     align-items: center;
     justify-content: center;
 
-    font-weight: bold;
-    margin-bottom: 15px;
+    border-radius: 10px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 800;
 }
 
-.sensor-card h3 {
-    color: #172033;
+
+.nav-link {
+    color: #596273 !important;
+
+    font-weight: 500;
+
+    margin-left: 18px;
 }
 
 
-/* ========================================
-   GENERAL DASHBOARD CARD
-======================================== */
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.dashboard-header {
+    background: #ffffff;
+
+    border-bottom: 1px solid var(--border);
+
+    padding: 42px 0;
+}
+
+
+.header-content {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 30px;
+}
+
+
+.eyebrow,
+.section-label {
+    color: #718096;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+}
+
+
+.dashboard-header h1 {
+    color: var(--primary);
+
+    font-size: 34px;
+
+    margin-top: 8px;
+
+    margin-bottom: 8px;
+
+    font-weight: 800;
+}
+
+
+.dashboard-header p {
+    color: var(--muted);
+
+    margin: 0;
+
+    max-width: 650px;
+}
+
+
+.system-status {
+    display: flex;
+
+    gap: 20px;
+
+    padding-top: 10px;
+}
+
+
+.status-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 13px;
+
+    color: #596273;
+}
+
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+}
+
+
+.status-unknown {
+    background: #9ca3af;
+}
+
+
+.status-online {
+    background: var(--success);
+}
+
+
+.status-offline {
+    background: var(--danger);
+}
+
+
+/* ================================
+   DASHBOARD CONTAINER
+================================ */
+
+.dashboard-container {
+    padding-top: 28px;
+
+    padding-bottom: 50px;
+}
+
+
+/* ================================
+   PREDICTION HERO
+================================ */
+
+.prediction-hero {
+    background:
+        linear-gradient(
+            135deg,
+            #17365d,
+            #244e7c
+        );
+
+    color: white;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    margin-bottom: 22px;
+
+    box-shadow:
+        0 14px 35px rgba(23, 54, 93, 0.15);
+}
+
+
+.prediction-hero-content {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 30px;
+}
+
+
+.prediction-hero .section-label {
+    color: #b9cbe1;
+}
+
+
+.prediction-hero h2 {
+    font-size: 24px;
+
+    margin: 7px 0;
+
+    font-weight: 750;
+}
+
+
+.prediction-hero p {
+    color: #d5dfeb;
+
+    margin: 0;
+
+    max-width: 600px;
+}
+
+
+.prediction-value {
+    white-space: nowrap;
+
+    font-size: 54px;
+
+    font-weight: 800;
+}
+
+
+.prediction-value small {
+    font-size: 19px;
+
+    font-weight: 500;
+
+    color: #d5dfeb;
+}
+
+
+.prediction-meta {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+
+.prediction-meta > div {
+    background: rgba(255,255,255,0.09);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    border-radius: 12px;
+
+    padding: 14px 16px;
+}
+
+
+.prediction-meta span {
+    display: block;
+
+    color: #b9cbe1;
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+
+.prediction-meta strong {
+    font-size: 15px;
+}
+
+
+/* ================================
+   SENSOR GRID
+================================ */
+
+.sensor-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 14px;
+
+    margin-bottom: 22px;
+}
+
+
+.sensor-card {
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.04);
+}
+
+
+.sensor-icon {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 10px;
+
+    background: var(--primary-light);
+
+    color: #1769d1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: 800;
+
+    margin-bottom: 17px;
+}
+
+
+.sensor-label {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin-bottom: 6px;
+}
+
+
+.sensor-value {
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: var(--primary);
+}
+
+
+.sensor-unit {
+    color: #9ca3af;
+
+    font-size: 12px;
+
+    margin-top: 3px;
+}
+
+
+/* ================================
+   CONTENT GRID
+================================ */
+
+.content-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.4fr 1fr;
+
+    gap: 18px;
+
+    margin-bottom: 22px;
+}
+
 
 .dashboard-card {
-    border: none;
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.04);
+
+    margin-bottom: 22px;
+}
+
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+
+.card-header h3 {
+    margin: 5px 0 0;
+
+    font-size: 20px;
+
+    font-weight: 750;
+
+    color: var(--primary);
+}
+
+
+.card-header p {
+    margin: 5px 0 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+
+/* ================================
+   MONITORING
+================================ */
+
+.monitoring-panel {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.monitoring-status {
+    display: flex;
+
+    gap: 13px;
+
+    align-items: flex-start;
+}
+
+
+.monitoring-dot {
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    margin-top: 5px;
+
+    flex-shrink: 0;
+}
+
+
+.monitoring-dot.neutral {
+    background: #9ca3af;
+}
+
+
+.monitoring-dot.normal {
+    background: var(--success);
+}
+
+
+.monitoring-dot.warning {
+    background: var(--warning);
+}
+
+
+.monitoring-title {
+    font-weight: 700;
+}
+
+
+.monitoring-status strong {
+    font-size: 15px;
+}
+
+
+.monitoring-status p {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin: 5px 0 0;
+
+    line-height: 1.5;
+}
+
+
+.formula-box {
+    background: #f8fafc;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    padding: 14px;
+}
+
+
+.formula-box span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+
+.formula-box strong {
+    font-size: 14px;
+
+    color: var(--primary);
+}
+
+
+/* ================================
+   RL CARD
+================================ */
+
+.rl-card {
+    border-left: 4px solid var(--success);
+}
+
+
+.rl-action {
+    padding: 20px;
+
+    background: #f8fafc;
+
     border-radius: 14px;
-    background-color: #ffffff;
-    padding: 16px;
-}
-
-.dashboard-card h5 {
-    color: #172033;
 }
 
 
-/* ========================================
+.rl-action-label {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+}
+
+
+.rl-action-value {
+    color: var(--primary);
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+}
+
+
+.rl-action p {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin: 0;
+
+    line-height: 1.5;
+}
+
+
+.simulation-note {
+    color: #8a6a32;
+
+    background: #fff8e8;
+
+    border: 1px solid #f1dfb5;
+
+    border-radius: 10px;
+
+    padding: 11px 13px;
+
+    font-size: 12px;
+
+    margin-top: 15px;
+}
+
+
+/* ================================
    CHART
-======================================== */
+================================ */
+
+.chart-card {
+    min-height: 360px;
+}
+
 
 .chart-container {
     position: relative;
+
+    height: 280px;
+}
+
+
+/* ================================
+   INPUT
+================================ */
+
+.input-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 14px;
+}
+
+
+.input-field label {
+    display: block;
+
+    color: #4b5563;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    margin-bottom: 7px;
+}
+
+
+.input-with-unit {
+    display: flex;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: white;
+}
+
+
+.input-with-unit input {
     width: 100%;
-    height: 300px;
+
+    border: 0;
+
+    outline: 0;
+
+    padding: 11px;
+
+    font-size: 14px;
 }
 
 
-/* ========================================
-   RECOMMENDATION
-======================================== */
+.input-with-unit span {
+    background: #f8fafc;
 
-.recommendation-card {
-    border-left: 4px solid #198754;
-}
+    border-left: 1px solid var(--border);
 
-.recommendation-box {
-    background-color: #f1f8f4;
-    border-radius: 12px;
-    padding: 20px;
-}
+    padding: 11px 9px;
 
-.recommendation-action {
-    font-size: 22px;
-    font-weight: bold;
-    color: #198754;
-    margin-bottom: 8px;
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    white-space: nowrap;
 }
 
 
-/* ========================================
-   PREDICTION FORM
-======================================== */
+.input-with-unit:focus-within {
+    border-color: #4775a7;
 
-#predictionForm .form-label {
-    font-weight: 600;
-    color: #343a40;
-}
-
-#predictionForm .form-control {
-    border-color: #dee2e6;
-}
-
-#predictionForm .form-control:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-}
-
-#predictionForm .input-group-text {
-    background-color: #f8f9fa;
-    color: #6c757d;
+    box-shadow:
+        0 0 0 3px rgba(71, 117, 167, 0.10);
 }
 
 
-/* ========================================
-   BUTTON
-======================================== */
-
-.btn-primary {
-    padding: 10px 20px;
-    font-weight: 600;
+.form-actions {
+    margin-top: 22px;
 }
 
 
-/* ========================================
-   QUICK ACTION
-======================================== */
+.primary-button {
+    border: 0;
 
-.quick-action-card {
-    border: none;
-    border-radius: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--primary);
+
+    color: white;
+
+    padding: 11px 20px;
+
+    border-radius: 10px;
+
+    font-weight: 650;
+
+    transition: 0.2s;
 }
 
-.quick-action-card:hover {
+
+.primary-button:hover {
+    background: #244e7c;
+
+    transform: translateY(-1px);
+}
+
+
+.error-box {
+    background: #fff1f0;
+
+    border: 1px solid #f0c4bf;
+
+    color: #9e3026;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    margin-top: 16px;
+
+    font-size: 13px;
+}
+
+
+/* ================================
+   QUICK LINKS
+================================ */
+
+.quick-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-top: 5px;
+}
+
+
+.quick-card {
+    display: block;
+
+    text-decoration: none;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    padding: 22px;
+
+    transition: 0.2s;
+}
+
+
+.quick-card:hover {
     transform: translateY(-3px);
-}
 
-.quick-action-card h5 {
-    color: #172033;
-}
-
-.quick-action-card p {
-    color: #6c757d;
+    box-shadow:
+        0 10px 25px rgba(15, 23, 42, 0.08);
 }
 
 
-/* ========================================
+.quick-card span {
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    color: #718096;
+}
+
+
+.quick-card h3 {
+    color: var(--primary);
+
+    font-size: 18px;
+
+    margin: 7px 0;
+}
+
+
+.quick-card p {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin: 0;
+
+    line-height: 1.5;
+}
+
+
+/* ================================
    FOOTER
-======================================== */
+================================ */
 
-footer {
-    margin-top: 40px;
+.app-footer {
+    background: #ffffff;
+
+    border-top: 1px solid var(--border);
+
+    color: #8a94a3;
 }
 
 
-/* ========================================
+/* ================================
    RESPONSIVE
-======================================== */
+================================ */
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
 
-    .nav-link {
-        margin-left: 0;
+    .sensor-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
     }
 
-    .dashboard-header {
-        text-align: center;
+    .input-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .header-content {
+        flex-direction: column;
     }
 
     .system-status {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
+        padding-top: 0;
     }
 
-    .reactor-status-card .card-body {
-        padding: 35px 20px;
+    .content-grid {
+        grid-template-columns: 1fr;
     }
 
-    .chart-container {
-        height: 250px;
+    .prediction-hero-content {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .prediction-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-grid {
+        grid-template-columns: 1fr;
     }
 
 }
 
-@media (max-width: 576px) {
+
+@media (max-width: 600px) {
 
     .dashboard-header h1 {
-        font-size: 28px;
+        font-size: 27px;
     }
 
-    .sensor-card h3 {
-        font-size: 24px;
+    .sensor-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
-    .recommendation-action {
-        font-size: 19px;
+    .input-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prediction-value {
+        font-size: 42px;
     }
 
 }

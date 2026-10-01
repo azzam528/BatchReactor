@@ -11,8 +11,8 @@
         <h1 class="fw-bold">Model Information</h1>
 
         <p class="text-muted mb-0">
-            Informasi model machine learning yang digunakan
-            pada Reactor Monitoring Dashboard.
+            Informasi model machine learning dan simulation
+            yang digunakan pada Batch Reactor Intelligence.
         </p>
     </div>
 
@@ -36,12 +36,13 @@
                     </div>
 
                     <h4 class="fw-bold">
-                        Random Forest Classifier
+                        Random Forest Regressor
                     </h4>
 
                     <p class="text-muted">
-                        Digunakan untuk melakukan klasifikasi kondisi
-                        reactor berdasarkan lima parameter input.
+                        Digunakan untuk memprediksi temperatur reactor
+                        pada timestep berikutnya berdasarkan kondisi
+                        reactor saat ini.
                     </p>
 
 
@@ -78,37 +79,23 @@
 
 
                     <h6 class="fw-bold mt-4">
-                        Target
+                        Prediction Target
                     </h6>
 
                     <p class="text-muted mb-0">
-                        Target Defect
+                        Reactor Temperature T(t+1)
                     </p>
 
 
                     <h6 class="fw-bold mt-4">
-                        Model Configuration
+                        Monitoring
                     </h6>
 
-                    <ul class="text-muted mb-0">
-
-                        <li>
-                            Algorithm: Random Forest
-                        </li>
-
-                        <li>
-                            Number of Trees: 100
-                        </li>
-
-                        <li>
-                            Random State: 42
-                        </li>
-
-                        <li>
-                            Preprocessing: StandardScaler
-                        </li>
-
-                    </ul>
+                    <p class="text-muted mb-0">
+                        Prediction error dihitung dari perbedaan
+                        antara actual T(t+1) dan predicted T(t+1)
+                        ketika nilai actual tersedia.
+                    </p>
 
                 </div>
 
@@ -133,12 +120,13 @@
                     </div>
 
                     <h4 class="fw-bold">
-                        Q-Learning
+                        RL Simulation
                     </h4>
 
                     <p class="text-muted">
-                        Digunakan untuk memberikan rekomendasi tindakan
-                        berdasarkan kondisi reactor yang disimulasikan.
+                        Digunakan untuk memberikan rekomendasi
+                        tindakan jacket flow berdasarkan kondisi
+                        reactor dalam simulation environment.
                     </p>
 
 
@@ -150,36 +138,36 @@
                     </h6>
 
                     <p class="text-muted">
-                        State terdiri dari lima parameter:
+                        State dapat menggunakan lima parameter reactor:
                     </p>
 
                     <ul class="text-muted">
 
                         <li>
-                            Suhu
+                            Reactor Temperature
                         </li>
 
                         <li>
-                            Tekanan
+                            Jacket Flow Rate
                         </li>
 
                         <li>
-                            Reaktan
+                            Pressure
                         </li>
 
                         <li>
-                            Produk
+                            Reactant A Concentration
                         </li>
 
                         <li>
-                            Coolant
+                            Product B Concentration
                         </li>
 
                     </ul>
 
 
                     <h6 class="fw-bold mt-4">
-                        Available Actions
+                        Candidate Actions
                     </h6>
 
                     <div class="table-responsive">
@@ -199,17 +187,17 @@
 
                                 <tr>
                                     <td>0</td>
-                                    <td>Turunkan Coolant</td>
+                                    <td>Decrease Jacket Flow</td>
                                 </tr>
 
                                 <tr>
                                     <td>1</td>
-                                    <td>Pertahankan</td>
+                                    <td>Maintain Jacket Flow</td>
                                 </tr>
 
                                 <tr>
                                     <td>2</td>
-                                    <td>Naikkan Coolant</td>
+                                    <td>Increase Jacket Flow</td>
                                 </tr>
 
                             </tbody>
@@ -222,12 +210,117 @@
                     <div class="alert alert-warning mt-4 mb-0">
 
                         <small>
-                            <strong>Catatan:</strong>
-                            Rekomendasi yang ditampilkan merupakan
-                            rekomendasi dari model untuk kebutuhan
-                            monitoring dan simulasi, bukan instruksi
-                            kontrol otomatis terhadap reactor fisik.
+                            <strong>Simulation only:</strong>
+                            rekomendasi RL digunakan sebagai
+                            decision support dalam simulation
+                            environment, bukan instruksi kontrol
+                            otomatis terhadap reactor fisik.
                         </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Prediction & Monitoring Flow -->
+    <div class="card dashboard-card shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">
+                Prediction & Monitoring Flow
+            </h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Step 1
+                        </small>
+
+                        <div class="fw-bold mt-1">
+                            Current Reactor State
+                        </div>
+
+                        <p class="text-muted small mb-0 mt-2">
+                            Lima parameter kondisi reactor
+                            digunakan sebagai input model.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Step 2
+                        </small>
+
+                        <div class="fw-bold mt-1">
+                            Temperature Prediction
+                        </div>
+
+                        <p class="text-muted small mb-0 mt-2">
+                            Model memprediksi temperatur
+                            pada timestep berikutnya.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Step 3
+                        </small>
+
+                        <div class="fw-bold mt-1">
+                            Prediction Error
+                        </div>
+
+                        <p class="text-muted small mb-0 mt-2">
+                            Prediksi dibandingkan dengan
+                            actual T(t+1) ketika tersedia.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Step 4
+                        </small>
+
+                        <div class="fw-bold mt-1">
+                            RL Simulation
+                        </div>
+
+                        <p class="text-muted small mb-0 mt-2">
+                            Agent memberikan rekomendasi
+                            action dalam simulation environment.
+                        </p>
 
                     </div>
 
@@ -250,7 +343,8 @@
             </h5>
 
             <p class="text-muted">
-                Artifact model yang digunakan oleh backend:
+                Artifact model akan digunakan oleh backend
+                setelah pipeline training selesai.
             </p>
 
             <div class="row g-3">
@@ -264,7 +358,7 @@
                         </small>
 
                         <div class="fw-bold">
-                            supervised_model.pkl
+                            Random Forest Regressor
                         </div>
 
                     </div>
@@ -277,11 +371,11 @@
                     <div class="border rounded p-3">
 
                         <small class="text-muted">
-                            Scaler
+                            Target
                         </small>
 
                         <div class="fw-bold">
-                            supervised_scaler.pkl
+                            Reactor_Temp_C(t+1)
                         </div>
 
                     </div>
@@ -294,45 +388,11 @@
                     <div class="border rounded p-3">
 
                         <small class="text-muted">
-                            Features
+                            Monitoring
                         </small>
 
                         <div class="fw-bold">
-                            supervised_features.pkl
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-6">
-
-                    <div class="border rounded p-3">
-
-                        <small class="text-muted">
-                            Q-Learning Table
-                        </small>
-
-                        <div class="fw-bold">
-                            rl_qtable.pkl
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-6">
-
-                    <div class="border rounded p-3">
-
-                        <small class="text-muted">
-                            RL Metadata
-                        </small>
-
-                        <div class="fw-bold">
-                            rl_metadata.pkl
+                            Prediction Error
                         </div>
 
                     </div>
@@ -357,9 +417,13 @@
 
             <p class="text-muted mb-0">
                 Sistem ini digunakan sebagai
-                <strong>Reactor Monitoring & Anomaly Simulation Dashboard</strong>.
-                Sistem berfungsi untuk monitoring, prediction,
-                simulasi, dan rekomendasi berbasis model machine learning.
+                <strong>Batch Reactor Prediction,
+                Monitoring & RL Simulation Dashboard</strong>.
+                Sistem memprediksi temperatur timestep berikutnya,
+                memonitor prediction deviation, dan menyediakan
+                rekomendasi tindakan melalui simulation environment.
+                Sistem ini merupakan decision-support system dan
+                bukan physical reactor controller.
             </p>
 
         </div>
