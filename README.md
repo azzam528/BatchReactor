@@ -1,4 +1,4 @@
-# 🧪 Batch Reactor Anomaly — Reactor Monitoring & Anomaly Simulation Dashboard
+# 🧪 Batch Reactor Anomaly Temperature Prediction — Reactor Monitoring & Anomaly Simulation Dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-Backend-000000?logo=flask&logoColor=white)
